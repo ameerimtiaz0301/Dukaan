@@ -1,0 +1,21 @@
+{
+  "name": "dukaan",
+  "version": "1.0.0",
+  "description": "Shopping! Who hate shopping? Everyone wants to get their hands on latest fashion trends and smartest new gadgets.\r <p align=\"center\"><img src=\"https://im.idiva.com/content/2015/Dec/shopping_10.gif\" width = 70%></p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ameerimtiaz0301/Dukaan.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ameerimtiaz0301/Dukaan/issues"
+  },
+  "homepage": "https://github.com/ameerimtiaz0301/Dukaan#readme"
+}
