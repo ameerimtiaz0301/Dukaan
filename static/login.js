@@ -10,13 +10,18 @@ function login() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert("Login successful!");
-        window.location = "home.html";
+        alert(`Welcome, ${data.user.username || data.user.email}!`);
+        window.location = "home.html"; // redirect after login
       } else {
         alert(data.message);
       }
     })
     .catch(err => console.error("Error:", err));
 
-  return false;
+  return false; // prevent form submit reload
+}
+
+// ✅ New function for redirecting to signup.html
+function redirectToSignup() {
+  window.location.href = "signup.html";
 }
