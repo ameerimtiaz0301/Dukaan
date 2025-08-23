@@ -4,6 +4,26 @@
   <title>Apni Dukaan - Signup</title>
   <link rel="stylesheet" href="./static/signup.css">
   <link rel="icon" href="./Images/favicon.ico" type="image/x-icon">
+  <style>
+    /* quick loading spinner */
+    .loading {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+    }
+    .loading::after {
+      content: "⏳";
+      display: inline-block;
+      margin-left: 6px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
   <section>
@@ -11,13 +31,16 @@
       <div class="form">
         <div class="form_logo"><img src="Images/Logo/ApniDukan.png"></div>
         <h2>SignUp</h2>
-        <form onsubmit="return signup()">
+        
+        <form id="signupForm">
           <div class="inputBox">
-            <input type="text" id="username" placeholder="Username" required pattern="[a-zA-Z0-9]+" title="Only AlphaNumeric Characters Allowed">
+            <input type="text" id="username" placeholder="Username" required 
+              pattern="[a-zA-Z0-9]+" title="Only AlphaNumeric Characters Allowed">
             <img src="./Images/user.png">
           </div>
           <div class="inputBox">
-            <input type="text" id="email" placeholder="Email Id" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            <input type="text" id="email" placeholder="Email Id" required 
+              pattern="[a-z0-9._%+\-]+@[a-z0-9.-]+\.[a-z]{2,}$">
             <img src="./Images/user.png">
           </div>
           <div class="inputBox">
@@ -30,7 +53,10 @@
           <div class="inputBox">
             <input class="btn" type="submit" value="SignUp">
           </div>
+          <!-- 🔄 Loading message -->
+          <div id="loading" class="loading">Signing up...</div>
         </form>
+
         <p>Have an <a href="login.html">Account</a>?</p>
       </div>
     </div>

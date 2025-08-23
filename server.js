@@ -8,18 +8,23 @@ const app = express();
 const PORT = 5000;
 
 // Middleware
-app.use(cors({
-  origin: ["http://127.0.0.1:5500", "http://localhost:5500"], // allow live server
+const corsOptions = {
+  origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
-}));
+  credentials: true,   // 👈 allow credentials
+  optionsSuccessStatus: 200
+};
 
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Test route
 app.get("/", (req, res) => {
   res.send("API is working 🚀");
 });
+
+
 
 
 // MySQL connection
@@ -72,44 +77,58 @@ app.post("/login", (req, res) => {
   });
 });
 
+// Log every incoming request (for debugging)
+app.use((req, res, next) => {
+  console.log(`📡 ${req.method} ${req.url}`);
+  next();
+});
+
 // Signup API
-app.post("/signup", (req, res) => {
-  const { username, email, password } = req.body;
+app.post("/signup", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email and password required" });
-  }
+    // 👀 Log incoming data
+    console.log("📩 Received signup request:", req.body);
 
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-    if (err) {
-      console.error("❌ DB select error:", err);
-      return res.status(500).json({ success: false, message: "DB error" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password required" });
     }
 
-    if (results.length > 0) {
-      return res.status(400).json({ success: false, message: "User already exists" });
-    }
+    // Check if user already exists
+    db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
+      if (err) {
+        console.error("❌ DB error:", err);
+        return res.status(500).json({ success: false, message: "DB error", error: err.message });
+      }
 
-    try {
+      if (results.length > 0) {
+        return res.status(400).json({ success: false, message: "User already exists" });
+      }
+
+      // Hash password
       const hashedPwd = await bcrypt.hash(password, 10);
 
+      // Insert new user
       db.query(
         "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-        [username || null, email, hashedPwd],
+        [username, email, hashedPwd],
         (err, result) => {
           if (err) {
-            console.error("❌ DB insert error:", err); // <-- log full error
-            return res.status(500).json({ success: false, message: "DB insert error" });
+            console.error("❌ DB insert error:", err);
+            return res.status(500).json({ success: false, message: "DB insert error", error: err.message });
           }
-          res.json({ success: true, message: "Signup successful" });
+          console.log("✅ User inserted:", { id: result.insertId, username, email });
+          return res.json({ success: true, message: "Signup successful", user: { id: result.insertId, username, email } });
         }
       );
-    } catch (hashErr) {
-      console.error("❌ Hashing error:", hashErr);
-      res.status(500).json({ success: false, message: "Password hashing failed" });
-    }
-  });
+    });
+  } catch (err) {
+    console.error("🔥 Unexpected error:", err);
+    return res.status(500).json({ success: false, message: "Unexpected server error", error: err.message });
+  }
 });
+
 
 
 app.listen(PORT, () => {
