@@ -1,3 +1,28 @@
+function showPopup(message, type = "info") {
+  const popup = document.getElementById("popup");
+  const popupMessage = document.getElementById("popup-message");
+  popupMessage.textContent = message;
+
+  // set success/error style
+  popup.classList.remove("success", "error");
+  if (type === "success") popup.classList.add("success");
+  if (type === "error") popup.classList.add("error");
+
+  popup.style.display = "flex";
+
+  // close on click of X
+  document.getElementById("popup-close").onclick = () => {
+    popup.style.display = "none";
+  };
+
+  // close if user clicks outside
+  window.onclick = (event) => {
+    if (event.target === popup) {
+      popup.style.display = "none";
+    }
+  };
+}
+
 document.getElementById("signupForm").addEventListener("submit", async function (e) {
   e.preventDefault(); // stop page reload
 
@@ -7,7 +32,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
   const loadingEl = document.getElementById("loading");
 
   if (!email || !password) {
-    alert("⚠️ Please enter email and password");
+    showPopup("⚠️ Please enter email and password", "error");
     return;
   }
 
@@ -26,14 +51,18 @@ document.getElementById("signupForm").addEventListener("submit", async function 
     console.log("Response data:", data);
 
     if (data.success) {
-      alert("✅ Signup successful! Please login now.");
-      window.location = "login.html";
+      showPopup("✅ Signup successful! Please login now.", "success");
+      // Redirect after 2 sec
+      setTimeout(() => {
+        window.location = "login.html";
+      }, 2000);
     } else {
-      alert("❌ Signup failed: " + data.message);
+      showPopup("❌ Signup failed: " + data.message, "error");
     }
+
   } catch (err) {
     console.error("🔥 Fetch error:", err);
-    alert("🚨 Cannot reach server. Please try again later.");
+    showPopup("🚨 Cannot reach server. Please try again later.", "error");
   } finally {
     // always hide loading
     loadingEl.style.display = "none";

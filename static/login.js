@@ -10,13 +10,19 @@ function login() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert(`Welcome, ${data.user.username || data.user.email}!`);
-        window.location = "home.html"; // redirect after login
+        showPopup(`✅ Welcome, ${data.user.username || data.user.email}!`, "success");
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location = "home.html";
+        }, 2000);
       } else {
-        alert(data.message);
+        showPopup("❌ " + data.message, "error");
       }
     })
-    .catch(err => console.error("Error:", err));
+    .catch(err => {
+      console.error("Error:", err);
+      showPopup("🚨 Cannot connect to server. Try again later.", "error");
+    });
 
   return false; // prevent form submit reload
 }
@@ -24,4 +30,29 @@ function login() {
 // ✅ New function for redirecting to signup.html
 function redirectToSignup() {
   window.location.href = "signup.html";
+}
+
+// ✅ Popup function (same as signup.js)
+function showPopup(message, type) {
+  const popup = document.getElementById("popup");
+  const popupMessage = document.getElementById("popup-message");
+  const closeBtn = document.getElementById("popup-close");
+
+  popupMessage.textContent = message;
+
+  // Optional: color by type
+  if (type === "success") {
+    popupMessage.style.color = "green";
+  } else if (type === "error") {
+    popupMessage.style.color = "red";
+  } else {
+    popupMessage.style.color = "#333";
+  }
+
+  popup.style.display = "flex";
+
+  closeBtn.onclick = () => (popup.style.display = "none");
+  popup.onclick = (e) => {
+    if (e.target === popup) popup.style.display = "none";
+  };
 }
